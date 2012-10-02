@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.github.postgresql</string>
+
+    <key>GitHub</key>
+    <dict>
+      <key>Description</key>
+      <string>A pretty okay relational database.</string>
+
+      <key>Port</key>
+      <integer><%= scope.lookupvar "postgresql::config::port" %></integer>
+    </dict>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string><%= scope.lookupvar "postgresql::config::executable" %></string>
+      <string>-p</string>
+      <string><%= scope.lookupvar "postgresql::config::port" %></string>
+      <string>-D</string>
+      <string><%= scope.lookupvar "postgresql::config::datadir" %></string>
+      <string>-r</string>
+      <string><%= scope.lookupvar "postgresql::config::logdir" %>/server.log</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true />
+
+    <key>KeepAlive</key>
+    <true />
+
+    <key>UserName</key>
+    <string><%= scope.lookupvar "::luser" %></string>
+
+    <key>WorkingDirectory</key>
+    <string><%= scope.lookupvar "postgresql::config::datadir" %></string>
+
+    <key>StandardErrorPath</key>
+    <string><%= scope.lookupvar "postgresql::config::logdir" %>/console.log</string>
+
+    <key>StandardOutPath</key>
+    <string><%= scope.lookupvar "postgresql::config::logdir" %>/console.log</string>
+  </dict>
+</plist>
