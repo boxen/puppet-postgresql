@@ -10,25 +10,25 @@ class postgresql {
     value => 393216
   }
 
-  package { 'github/brews/postgresql':
-    ensure => '9.1.4-github2',
-    notify => Service['com.github.postgresql']
+  package { 'boxen/brews/postgresql':
+    ensure => '9.1.4-boxen2',
+    notify => Service['com.boxen.postgresql']
   }
 
   exec { 'init-postgresql-db':
     command => "initdb -E UTF-8 ${postgresql::config::datadir}",
     creates => "${postgresql::config::datadir}/PG_VERSION",
-    require => Package['github/brews/postgresql']
+    require => Package['boxen/brews/postgresql']
   }
 
-  service { 'com.github.postgresql':
+  service { 'com.boxen.postgresql':
     ensure  => running,
     require => Exec['init-postgresql-db']
   }
 
-  file { "${github::config::envdir}/postgresql.sh":
+  file { "${boxen::config::envdir}/postgresql.sh":
     content => template('postgresql/env.sh.erb'),
-    require => File[$github::config::envdir]
+    require => File[$boxen::config::envdir]
   }
 
   $nc = "nc -z localhost ${postgresql::config::port}"
@@ -38,6 +38,6 @@ class postgresql {
     provider => shell,
     timeout  => 30,
     unless   => $nc,
-    require  => Service['com.github.postgresql']
+    require  => Service['com.boxen.postgresql']
   }
 }
