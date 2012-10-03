@@ -1,4 +1,12 @@
-# Puppet postgresql for Boxen
+# PostgreSQL Puppet Module for Boxen
 
-FIXME: update me bro
+Requires the following boxen modules:
 
+* `boxen`
+* `homebrew`
+
+## Usage
+
+```puppet
+postgresql::db { 'mydb': }
+```
