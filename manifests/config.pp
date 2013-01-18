@@ -10,10 +10,10 @@ class postgresql::config {
     ensure  => directory
   }
 
-  file { '/Library/LaunchDaemons/com.boxen.postgresql.plist':
-    content => template('postgresql/com.boxen.postgresql.plist.erb'),
+  file { '/Library/LaunchDaemons/dev.postgresql.plist':
+    content => template('postgresql/dev.postgresql.plist.erb'),
     group   => 'wheel',
-    notify  => Service['com.boxen.postgresql'],
+    notify  => Service['dev.postgresql'],
     owner   => 'root'
   }
 }
