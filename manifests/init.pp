@@ -12,7 +12,7 @@ class postgresql {
 
   package { 'boxen/brews/postgresql':
     ensure => '9.1.4-boxen2',
-    notify => Service['com.boxen.postgresql']
+    notify => Service['dev.postgresql']
   }
 
   exec { 'init-postgresql-db':
@@ -21,9 +21,14 @@ class postgresql {
     require => Package['boxen/brews/postgresql']
   }
 
-  service { 'com.boxen.postgresql':
+  service { 'dev.postgresql':
     ensure  => running,
     require => Exec['init-postgresql-db']
+  }
+
+  service { 'com.boxen.postgresql': # replaced by dev.postgresql
+    before => Service['dev.postgresql'],
+    enable => false
   }
 
   file { "${boxen::config::envdir}/postgresql.sh":
@@ -38,6 +43,6 @@ class postgresql {
     provider => shell,
     timeout  => 30,
     unless   => $nc,
-    require  => Service['com.boxen.postgresql']
+    require  => Service['dev.postgresql']
   }
 }
