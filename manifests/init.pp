@@ -1,6 +1,21 @@
 class postgresql {
   require postgresql::config
+  include homebrew
   require sysctl
+
+  file { [
+    $postgresql::config::datadir,
+    $postgresql::config::logdir,
+  ]:
+    ensure  => directory
+  }
+
+  file { '/Library/LaunchDaemons/dev.postgresql.plist':
+    content => template('postgresql/dev.postgresql.plist.erb'),
+    group   => 'wheel',
+    notify  => Service['dev.postgresql'],
+    owner   => 'root'
+  }
 
   sysctl::set { 'kern.sysv.shmmax':
     value => 1610612736
@@ -8,6 +23,10 @@ class postgresql {
 
   sysctl::set { 'kern.sysv.shmall':
     value => 393216
+  }
+
+  homebrew::formula { 'postgresql':
+    before => Package['boxen/brews/postgresql'],
   }
 
   package { 'boxen/brews/postgresql':
