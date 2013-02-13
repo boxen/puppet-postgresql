@@ -1,7 +1,7 @@
 class postgresql {
-  require postgresql::config
+  include postgresql::config
   include homebrew
-  require sysctl
+  include sysctl
 
   file { [
     $postgresql::config::datadir,
