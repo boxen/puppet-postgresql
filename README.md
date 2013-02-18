@@ -15,3 +15,4 @@ postgresql::db { 'mydb': }
 * `boxen`
 * `homebrew`
 * `stdlib`
+* `sysctl`
