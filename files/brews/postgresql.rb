@@ -6,6 +6,7 @@ class Postgresql < Formula
   sha1 '75b53c884cb10ed9404747b51677358f12082152'
   version '9.2.4-boxen1'
 
+  depends_on 'readline'
   depends_on 'ossp-uuid'
 
   def options
@@ -17,7 +18,18 @@ class Postgresql < Formula
     ]
   end
 
+  # Fix PL/Python build: https://github.com/mxcl/homebrew/issues/11162
+  # Fix uuid-ossp build issues: http://archives.postgresql.org/pgsql-general/2012-07/msg00654.php
+  def patches
+    DATA
+  end
+
   skip_clean :all
+
+  fails_with :clang do
+    build 211
+    cause 'Miscompilation resulting in segfault on queries'
+  end
 
   def install
     ENV.libxml2 if MacOS.snow_leopard?
@@ -37,8 +49,7 @@ class Postgresql < Formula
       "--with-libedit"
     ]
 
-    args << "--with-ossp-uuid" unless MacOS.mountain_lion?
-
+    args << "--with-ossp-uuid" unless ARGV.include? '--no-ossp-uuid'
     args << "--with-python" unless ARGV.include? '--no-python'
     args << "--with-perl" unless ARGV.include? '--no-perl'
     args << "--enable-dtrace" if ARGV.include? '--enable-dtrace'
@@ -89,3 +100,27 @@ class Postgresql < Formula
     end
   end
 end
+
+__END__
+--- a/src/pl/plpython/Makefile  2011-09-23 08:03:52.000000000 +1000
++++ b/src/pl/plpython/Makefile  2011-10-26 21:43:40.000000000 +1100
+@@ -24,8 +24,6 @@
+ # Darwin (OS X) has its own ideas about how to do this.
+ ifeq ($(PORTNAME), darwin)
+ shared_libpython = yes
+-override python_libspec = -framework Python
+-override python_additional_libs =
+ endif
+ 
+ # If we don't have a shared library and the platform doesn't allow it
+--- a/contrib/uuid-ossp/uuid-ossp.c 2012-07-30 18:34:53.000000000 -0700
++++ b/contrib/uuid-ossp/uuid-ossp.c 2012-07-30 18:35:03.000000000 -0700
+@@ -9,6 +9,8 @@
+  *-------------------------------------------------------------------------
+  */
+
++#define _XOPEN_SOURCE
++
+ #include "postgres.h"
+ #include "fmgr.h"
+ #include "utils/builtins.h"
