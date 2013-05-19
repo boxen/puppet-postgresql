@@ -30,7 +30,7 @@ class postgresql {
   }
 
   package { 'boxen/brews/postgresql':
-    ensure => '9.1.4-boxen2',
+    ensure => '9.2.4-boxen1',
     notify => Service['dev.postgresql']
   }
 
