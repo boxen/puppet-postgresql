@@ -10,6 +10,6 @@ define postgresql::db($ensure = present) {
       $name
     ], ' '),
     require => Exec['wait-for-postgresql'],
-    unless  => "psql -aA -p${postgresql::config::port} -l | grep ' ${name} '"
+    unless  => "psql -aA -p${postgresql::config::port} -l | grep '${name}'"
   }
 }
