@@ -18,3 +18,5 @@ postgresql::db { 'mydb': }
 * `homebrew`
 * `stdlib`
 * `sysctl`
+
+*Note: Boxen runs most services on non-standard ports as to not collide with existing local installs. Boxen Postgresql runs on 15432 as opposed to the standard 5432.*
