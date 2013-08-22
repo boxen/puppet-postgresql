@@ -1,3 +1,8 @@
+# Public: Install and configure postgresql from homebrew.
+#
+# Examples
+#
+#   include postgresql
 class postgresql {
   include postgresql::config
   include homebrew

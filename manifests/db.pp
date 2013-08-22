@@ -1,3 +1,8 @@
+# Creates a new postgresql database.
+#
+# Usage:
+#
+#     postgresql::db { 'mydb': }
 define postgresql::db($ensure = present) {
   require postgresql
 
