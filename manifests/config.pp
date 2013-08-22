@@ -1,3 +1,8 @@
+# Internal: Configure postgresql.
+#
+# Examples
+#
+#   include postgresql::config
 class postgresql::config {
   require boxen::config
 

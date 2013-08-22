@@ -1,3 +1,8 @@
+# Creates a new postgresql database.
+#
+# Usage:
+#
+#     postgresql::db { 'mydb': }
 define postgresql::db($ensure = present) {
   require postgresql
 
@@ -6,7 +11,7 @@ define postgresql::db($ensure = present) {
       'createdb',
       "-p${postgresql::config::port}",
       '-E UTF-8',
-      "-O ${::luser}",
+      "-O ${::boxen_user}",
       $name
     ], ' '),
     require => Exec['wait-for-postgresql'],
