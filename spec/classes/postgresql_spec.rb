@@ -54,8 +54,7 @@ describe 'postgresql' do
     })
 
     should contain_file('/test/boxen/env.d/postgresql.sh').with({
-      :content => File.read('spec/fixtures/postgresql.sh'),
-      :require => 'File[/test/boxen/env.d]'
+      :ensure => :absent,
     })
 
     should contain_exec('wait-for-postgresql').with({

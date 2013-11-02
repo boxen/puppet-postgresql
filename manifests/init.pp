@@ -55,9 +55,13 @@ class postgresql {
     enable => false
   }
 
+  boxen::env_script { 'postgresql':
+    content  => template('postgresql/env.sh.erb'),
+    priority => 'lower',
+  }
+
   file { "${boxen::config::envdir}/postgresql.sh":
-    content => template('postgresql/env.sh.erb'),
-    require => File[$boxen::config::envdir]
+    ensure => absent,
   }
 
   $nc = "nc -z localhost ${postgresql::config::port}"
