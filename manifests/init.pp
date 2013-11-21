@@ -53,4 +53,7 @@ class postgresql(
     port    => $port,
   }
 
+  ->
+  Postgresql::Db <| |>
+
 }
