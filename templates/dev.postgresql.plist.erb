@@ -10,19 +10,22 @@
       <key>Description</key>
       <string>A tolerably okay relational database.</string>
 
+      <key>Host</key>
+      <string><%= @host %></string>
+
       <key>Port</key>
-      <integer><%= scope.lookupvar "postgresql::config::port" %></integer>
+      <integer><%= @port %></integer>
     </dict>
 
     <key>ProgramArguments</key>
     <array>
-      <string><%= scope.lookupvar "postgresql::config::executable" %></string>
+      <string><%= @executable %></string>
       <string>-p</string>
-      <string><%= scope.lookupvar "postgresql::config::port" %></string>
+      <string><%= @port %></string>
       <string>-D</string>
-      <string><%= scope.lookupvar "postgresql::config::datadir" %></string>
+      <string><%= @datadir %></string>
       <string>-r</string>
-      <string><%= scope.lookupvar "postgresql::config::logdir" %>/server.log</string>
+      <string><%= @logdir %>/server.log</string>
     </array>
 
     <key>RunAtLoad</key>
@@ -35,12 +38,12 @@
     <string><%= scope.lookupvar "::boxen_user" %></string>
 
     <key>WorkingDirectory</key>
-    <string><%= scope.lookupvar "postgresql::config::datadir" %></string>
+    <string><%= @datadir %></string>
 
     <key>StandardErrorPath</key>
-    <string><%= scope.lookupvar "postgresql::config::logdir" %>/console.log</string>
+    <string><%= @logdir %>/console.log</string>
 
     <key>StandardOutPath</key>
-    <string><%= scope.lookupvar "postgresql::config::logdir" %>/console.log</string>
+    <string><%= @logdir %>/console.log</string>
   </dict>
 </plist>
