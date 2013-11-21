@@ -9,7 +9,9 @@ end
 
 def default_test_facts
   {
-    :boxen_home => "/test/boxen",
-    :boxen_user => "testuser"
+    :boxen_home      => "/test/boxen",
+    :boxen_user      => "testuser",
+    :ipaddress_lo0   => "127.0.0.1",
+    :operatingsystem => "Darwin",
   }
 end

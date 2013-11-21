@@ -3,74 +3,52 @@
 # Examples
 #
 #   include postgresql
-class postgresql {
-  include postgresql::config
-  include homebrew
-  include sysctl
+class postgresql(
+  $ensure     = $postgresql::params::ensure,
 
-  file { [
-    $postgresql::config::datadir,
-    $postgresql::config::logdir,
-  ]:
-    ensure  => directory
+  $executable = $postgresql::params::executable,
+
+  $host       = $postgresql::params::host,
+  $port       = $postgresql::params::port,
+  $datadir    = $postgresql::params::datadir,
+  $logdir     = $postgresql::params::logdir,
+
+  $package    = $postgresql::params::package,
+  $version    = $postgresql::params::version,
+
+  $service    = $postgresql::params::service,
+  $enable     = $postgresql::params::enable,
+) inherits postgresql::params {
+
+  class { 'postgresql::config':
+    ensure     => $ensure,
+
+    executable => $executable,
+
+    host       => $host,
+    port       => $port,
+    datadir    => $datadir,
+    logdir     => $logdir,
   }
 
-  file { '/Library/LaunchDaemons/dev.postgresql.plist':
-    content => template('postgresql/dev.postgresql.plist.erb'),
-    group   => 'wheel',
-    notify  => Service['dev.postgresql'],
-    owner   => 'root'
+  ~>
+  class { 'postgresql::package':
+    ensure  => $ensure,
+
+    package => $package,
+    version => $version,
   }
 
-  sysctl::set { 'kern.sysv.shmmax':
-    value => 1610612736
+  ~>
+  class { 'postgresql::service':
+    ensure  => $ensure,
+
+    service => $service,
+    enable  => $enable,
+
+    datadir => $datadir,
+    host    => $host,
+    port    => $port,
   }
 
-  sysctl::set { 'kern.sysv.shmall':
-    value => 393216
-  }
-
-  homebrew::formula { 'postgresql':
-    before => Package['boxen/brews/postgresql'],
-  }
-
-  package { 'boxen/brews/postgresql':
-    ensure => '9.2.4-boxen2',
-    notify => Service['dev.postgresql']
-  }
-
-  exec { 'init-postgresql-db':
-    command => "initdb -E UTF-8 ${postgresql::config::datadir}",
-    creates => "${postgresql::config::datadir}/PG_VERSION",
-    require => Package['boxen/brews/postgresql']
-  }
-
-  service { 'dev.postgresql':
-    ensure  => running,
-    require => Exec['init-postgresql-db']
-  }
-
-  service { 'com.boxen.postgresql': # replaced by dev.postgresql
-    before => Service['dev.postgresql'],
-    enable => false
-  }
-
-  boxen::env_script { 'postgresql':
-    content  => template('postgresql/env.sh.erb'),
-    priority => 'lower',
-  }
-
-  file { "${boxen::config::envdir}/postgresql.sh":
-    ensure => absent,
-  }
-
-  $nc = "nc -z localhost ${postgresql::config::port}"
-
-  exec { 'wait-for-postgresql':
-    command  => "while ! ${nc}; do sleep 1; done",
-    provider => shell,
-    timeout  => 30,
-    unless   => $nc,
-    require  => Service['dev.postgresql']
-  }
 }
