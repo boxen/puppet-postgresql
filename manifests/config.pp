@@ -23,11 +23,6 @@ class postgresql::config(
       $logdir
     ]:
       ensure => $dir_ensure;
-
-    '/Library/LaunchDaemons/dev.postgresql.plist':
-      content => template('postgresql/dev.postgresql.plist.erb'),
-      group   => 'wheel',
-      owner   => 'root' ;
   }
 
   sysctl::set {
@@ -47,6 +42,13 @@ class postgresql::config(
 
     file { "${boxen::config::envdir}/postgresql.sh":
       ensure => absent,
+    }
+
+
+    file { '/Library/LaunchDaemons/dev.postgresql.plist':
+      content => template('postgresql/dev.postgresql.plist.erb'),
+      group   => 'wheel',
+      owner   => 'root',
     }
   }
 }

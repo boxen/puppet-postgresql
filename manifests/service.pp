@@ -1,6 +1,6 @@
 # Internal: manages postgresql service
 class postgresql::service(
-  $ensure  = postgresql::params::ensure,
+  $ensure  = $postgresql::params::ensure,
 
   $service = $postgresql::params::service,
   $enable  = $postgresql::params::enable,
