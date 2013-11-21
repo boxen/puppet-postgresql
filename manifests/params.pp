@@ -14,6 +14,8 @@ class postgresql::params {
       $version    = '9.2.4-boxen2'
 
       $service    = 'dev.postgresql'
+
+      $user       = $::boxen_user
     }
 
     Ubuntu: {
@@ -26,6 +28,8 @@ class postgresql::params {
       $version    = installed
 
       $service    = 'postgresql-9.1'
+
+      $user       = 'postgresql'
     }
 
     default: {

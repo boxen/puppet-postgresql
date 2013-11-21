@@ -18,6 +18,8 @@ class postgresql(
 
   $service    = $postgresql::params::service,
   $enable     = $postgresql::params::enable,
+
+  $user       = $postgresql::params::user,
 ) inherits postgresql::params {
 
   class { 'postgresql::config':
