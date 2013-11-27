@@ -34,6 +34,7 @@ class postgresql::service(
   service { $service:
     ensure => $svc_ensure,
     enable => $enable,
+    alias  => 'postgresql',
   }
 
   ->

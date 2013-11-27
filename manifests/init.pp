@@ -31,6 +31,8 @@ class postgresql(
     port       => $port,
     datadir    => $datadir,
     logdir     => $logdir,
+
+    notify     => Service['postgresql'],
   }
 
   ~>
