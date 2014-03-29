@@ -16,6 +16,7 @@ class postgresql::service(
   }
 
   $nc = "nc -z ${host} ${port}"
+  $pidfile = "${datadir}/postmaster.pid"
 
   if $::operatingsystem == 'Darwin' {
     service { 'com.boxen.postgresql':
@@ -28,6 +29,13 @@ class postgresql::service(
   exec { 'init-postgresql-db':
     command => "initdb -E UTF-8 ${datadir}",
     creates => "${datadir}/PG_VERSION",
+  }
+
+  ->
+  exec { 'kill-stale-postgres-pidfile':
+    # Remove the pidfile, unless there's a postgres process running
+    command => "rm -f ${pidfile}",
+    unless  => "ps -p `head -1 ${pidfile}` | grep postgres",
   }
 
   ->
