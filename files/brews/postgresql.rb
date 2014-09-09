@@ -51,8 +51,11 @@ class Postgresql < Formula
 
     args << "--with-ossp-uuid" unless ARGV.include? '--no-ossp-uuid'
     args << "--with-python" unless ARGV.include? '--no-python'
-    args << "--with-perl" unless ARGV.include? '--no-perl'
     args << "--enable-dtrace" if ARGV.include? '--enable-dtrace'
+
+    if MacOS.version < :yosemite
+      args << "--with-perl" unless ARGV.include? '--no-perl'
+    end
 
     ENV.append 'CFLAGS', `uuid-config --cflags`.strip
     ENV.append 'LDFLAGS', `uuid-config --ldflags`.strip
@@ -111,7 +114,7 @@ __END__
 -override python_libspec = -framework Python
 -override python_additional_libs =
  endif
- 
+
  # If we don't have a shared library and the platform doesn't allow it
 --- a/contrib/uuid-ossp/uuid-ossp.c 2012-07-30 18:34:53.000000000 -0700
 +++ b/contrib/uuid-ossp/uuid-ossp.c 2012-07-30 18:35:03.000000000 -0700
