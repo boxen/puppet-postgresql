@@ -9,7 +9,10 @@ define postgresql::db (
 ) {
   require postgresql
 
-  $db_owner = $db_owner ? { undef => $postgresql::user, default => $owner }
+  $db_owner = $owner ? {
+    undef   => $postgresql::user,
+    default => $owner
+  }
 
   exec { "postgresql-db-${name}":
     command => join([
