@@ -5,7 +5,7 @@ class postgresql::params {
     Darwin: {
       include boxen::config
 
-      $executable = "${boxen::config::home}/homebrew/bin/postgres"
+      $executable = "${boxen::config::homebrewdir}/bin/postgres"
       $datadir    = "${boxen::config::datadir}/postgresql-9.3"
       $logdir     = "${boxen::config::logdir}/postgresql-9.3"
       $port       = 15432
