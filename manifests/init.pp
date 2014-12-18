@@ -6,6 +6,7 @@
 class postgresql(
   $ensure     = $postgresql::params::ensure,
 
+  $binpath    = $postgresql::params::binpath,
   $executable = $postgresql::params::executable,
 
   $host       = $postgresql::params::host,

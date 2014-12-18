@@ -10,12 +10,12 @@ define postgresql::db(
 
   exec { "postgresql-db-${name}":
     command => join([
-      'createdb',
+      "${postgresql::binpath}/createdb",
       "-p${postgresql::port}",
       '-E UTF-8',
       "-O ${postgresql::user}",
       $name
     ], ' '),
-    unless  => "psql -aA -p${postgresql::port} -t -l | cut -d \\| -f 1 | grep -w '${name}'"
+    unless  => "${postgresql::binpath}/psql -aA -p${postgresql::port} -t -l | cut -d \\| -f 1 | grep -w '${name}'"
   }
 }
