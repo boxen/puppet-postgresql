@@ -5,7 +5,7 @@ class postgresql::params {
     Darwin: {
       include boxen::config
 
-      $binpath    = "${boxen::config::homebrewdir}/bin"
+      $bindir     = "${boxen::config::homebrewdir}/bin"
       $executable = "${binpath}/postgres"
       $datadir    = "${boxen::config::datadir}/postgresql"
       $logdir     = "${boxen::config::logdir}/postgresql"
