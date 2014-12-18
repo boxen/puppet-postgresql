@@ -21,6 +21,7 @@ class postgresql::params {
 
     Ubuntu: {
       $executable = undef # only used on Darwin
+      $bindir     = '/usr/bin'
       $datadir    = '/var/lib/postgresql'
       $logdir     = '/var/log/postgresql'
       $port       = 5432
