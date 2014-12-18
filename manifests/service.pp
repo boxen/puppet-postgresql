@@ -5,6 +5,7 @@ class postgresql::service(
   $service = $postgresql::params::service,
   $enable  = $postgresql::params::enable,
 
+  $bindir  = $postgresql::params::bindir,
   $datadir = $postgresql::params::datadir,
   $host    = $postgresql::params::host,
   $port    = $postgresql::params::port,
@@ -27,7 +28,7 @@ class postgresql::service(
   }
 
   exec { 'init-postgresql-db':
-    command => "initdb -E UTF-8 ${datadir}",
+    command => "${bindir}/initdb -E UTF-8 ${datadir}",
     creates => "${datadir}/PG_VERSION",
   }
 
