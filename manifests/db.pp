@@ -16,6 +16,6 @@ define postgresql::db(
       "-O ${postgresql::user}",
       $name
     ], ' '),
-    unless  => "${postgresql::bindir}/psql -aA -p${postgresql::port} -t -l | cut -d \\| -f 1 | grep -w '${name}'"
+    unless  => "${postgresql::bindir}/psql -a -p${postgresql::port} -t -l | cut -d \\| -f 1 | grep -w '${name}'"
   }
 }
