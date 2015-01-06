@@ -5,7 +5,8 @@ class postgresql::params {
     Darwin: {
       include boxen::config
 
-      $executable = "${boxen::config::homebrewdir}/bin/postgres"
+      $bindir     = "${boxen::config::homebrewdir}/bin"
+      $executable = "${bindir}/postgres"
       $datadir    = "${boxen::config::datadir}/postgresql-9.3"
       $logdir     = "${boxen::config::logdir}/postgresql-9.3"
       $port       = 15432
@@ -20,6 +21,7 @@ class postgresql::params {
 
     Ubuntu: {
       $executable = undef # only used on Darwin
+      $bindir     = '/usr/bin'
       $datadir    = '/var/lib/postgresql'
       $logdir     = '/var/log/postgresql'
       $port       = 5432
