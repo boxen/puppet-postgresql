@@ -3,17 +3,23 @@
 # Usage:
 #
 #     postgresql::db { 'mydb': }
-define postgresql::db(
-  $ensure = present
+define postgresql::db (
+  $ensure = present,
+  $owner = undef
 ) {
   require postgresql
+
+  $db_owner = $owner ? {
+    undef   => $postgresql::user,
+    default => $owner
+  }
 
   exec { "postgresql-db-${name}":
     command => join([
       'createdb',
       "-p${postgresql::port}",
       '-E UTF-8',
-      "-O ${postgresql::user}",
+      "-O ${db_owner}",
       $name
     ], ' '),
     unless  => "psql -aA -p${postgresql::port} -t -l | cut -d \\| -f 1 | grep -w '${name}'"
