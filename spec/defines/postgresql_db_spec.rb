@@ -9,7 +9,7 @@ describe "postgresql::db" do
 
     should contain_exec("postgresql-db-#{title}").with({
       :command => "/test/boxen/homebrew/bin/createdb -p15432 -E UTF-8 -O testuser #{title}",
-      :unless  => "/test/boxen/homebrew/bin/psql -aA -p15432 -t -l | cut -d \\| -f 1 | grep -w '#{title}'"
+      :unless  => "/test/boxen/homebrew/bin/psql -a -p15432 -t -l | cut -d \\| -f 1 | grep -w '#{title}'"
     })
   end
 end
