@@ -6,7 +6,7 @@ describe "postgresql::service" do
   it do
     should contain_service("com.boxen.postgresql").with_ensure(:stopped)
 
-    should contain_exec("init-postgresql-db").with_creates("/test/boxen/data/postgresql-9.3/PG_VERSION")
+    should contain_exec("init-postgresql-db").with_creates("/test/boxen/data/postgresql-9.4/PG_VERSION")
     should contain_service("dev.postgresql").with_ensure(:running)
     should contain_exec("wait-for-postgresql").with_unless("nc -z 127.0.0.1 15432")
   end
