@@ -12,7 +12,7 @@ class postgresql::params {
       $port       = 15432
 
       $package    = 'boxen/brews/postgresql'
-      $version    = '9.4.1-boxen2'
+      $version    = '9.4.4-boxen'
 
       $service    = 'dev.postgresql'
 
