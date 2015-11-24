@@ -35,6 +35,12 @@ class postgresql::config(
   if $::operatingsystem == 'Darwin' {
     include boxen::config
 
+    boxen::env_script { 'postgresql-fish':
+      content   => template('postgresql/env.fish.erb'),
+      priority  => 'lower',
+      extension => 'fish',
+    }
+
     boxen::env_script { 'postgresql':
       content  => template('postgresql/env.sh.erb'),
       priority => 'lower',
