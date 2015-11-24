@@ -1,18 +1,23 @@
 class Postgresql < Formula
-  homepage "http://www.postgresql.org/"
+  desc "Object-relational database system"
+  homepage "https://www.postgresql.org/"
+  revision 2
 
   stable do
-    url "http://ftp.postgresql.org/pub/source/v9.4.1/postgresql-9.4.1.tar.bz2"
-    sha256 "29ddb77c820095b8f52e5455e9c6c6c20cf979b0834ed1986a8857b84888c3a6"
+    url "https://ftp.postgresql.org/pub/source/v9.4.5/postgresql-9.4.5.tar.bz2"
+    sha256 "b87c50c66b6ea42a9712b5f6284794fabad0616e6ae420cf0f10523be6d94a39"
   end
 
-  version "9.4.1-boxen2"
-
   bottle do
-    revision 1
-    sha1 "4b5a1f7ebe10ec5aba088459a4faa2ba7c13a691" => :yosemite
-    sha1 "e7844fc53d1ffef1cb809332d88b5bb777927176" => :mavericks
-    sha1 "a5e70e04dba89fee99bb5fb7dae74e4a849813c4" => :mountain_lion
+    sha256 "b57a3b65cd90917273d754f2625a83e69eac78aeff5b79573f8ac9811bdf643c" => :el_capitan
+    sha256 "6b26ad24a228620e16d7f81b4f3bd183a80e1c2f02b8505a1a6b71356eec53a4" => :yosemite
+    sha256 "a6a49e234543bb7c4fb33b64dd14b48da5b8373fb2110d62e82d7129997f4926" => :mavericks
+  end
+
+  devel do
+    url "https://ftp.postgresql.org/pub/source/v9.5beta1/postgresql-9.5beta1.tar.bz2"
+    sha256 "b53199e2667982de2039ad7e30467f67c5d7af678e69d6211de8ba1cac75c9f0"
+    version "9.5beta1"
   end
 
   option "32-bit"
@@ -40,10 +45,15 @@ class Postgresql < Formula
   def install
     ENV.libxml2 if MacOS.version >= :snow_leopard
 
+    ENV.prepend "LDFLAGS", "-L#{Formula["openssl"].opt_lib} -L#{Formula["readline"].opt_lib}"
+    ENV.prepend "CPPLAGS", "-I#{Formula["openssl"].opt_include} -I#{Formula["readline"].opt_include}"
+
     args = %W[
       --disable-debug
       --prefix=#{prefix}
-      --datadir=#{share}/#{name}
+      --datadir=#{HOMEBREW_PREFIX}/share/postgresql
+      --libdir=#{HOMEBREW_PREFIX}/lib
+      --sysconfdir=#{etc}
       --docdir=#{doc}
       --enable-thread-safety
       --with-bonjour
@@ -58,7 +68,7 @@ class Postgresql < Formula
     args << "--with-python" if build.with? "python"
     args << "--with-perl" if build.with? "perl"
 
-    # The CLT is required to build tcl support on 10.7 and 10.8 because
+    # The CLT is required to build Tcl support on 10.7 and 10.8 because
     # tclConfig.sh is not part of the SDK
     if build.with?("tcl") && (MacOS.version >= :mavericks || MacOS::CLT.installed?)
       args << "--with-tcl"
@@ -72,11 +82,14 @@ class Postgresql < Formula
     args << "--with-uuid=e2fs"
 
     if build.build_32_bit?
-      ENV.append %w{CFLAGS LDFLAGS}, "-arch #{Hardware::CPU.arch_32_bit}"
+      ENV.append %w[CFLAGS LDFLAGS], "-arch #{Hardware::CPU.arch_32_bit}"
     end
 
     system "./configure", *args
-    system "make", "install-world"
+    system "make"
+    system "make", "install-world", "datadir=#{pkgshare}",
+                                    "libdir=#{lib}",
+                                    "pkglibdir=#{lib}/postgresql"
   end
 
   def post_install
@@ -91,7 +104,7 @@ class Postgresql < Formula
       https://github.com/Homebrew/homebrew/issues/2510
 
     To migrate existing data from a previous major version (pre-9.4) of PostgreSQL, see:
-      http://www.postgresql.org/docs/9.4/static/upgrading.html
+      https://www.postgresql.org/docs/9.4/static/upgrading.html
     EOS
   end
 
@@ -127,5 +140,8 @@ class Postgresql < Formula
 
   test do
     system "#{bin}/initdb", testpath/"test"
+    assert_equal "#{HOMEBREW_PREFIX}/share/postgresql", shell_output("#{bin}/pg_config --sharedir").chomp
+    assert_equal "#{HOMEBREW_PREFIX}/lib", shell_output("#{bin}/pg_config --libdir").chomp
+    assert_equal "#{HOMEBREW_PREFIX}/lib/postgresql", shell_output("#{bin}/pg_config --pkglibdir").chomp
   end
 end
