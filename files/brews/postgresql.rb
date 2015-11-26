@@ -6,6 +6,7 @@ class Postgresql < Formula
   sha1 '75b53c884cb10ed9404747b51677358f12082152'
   version '9.2.4-boxen2'
 
+  depends_on 'openssl'
   depends_on 'readline'
   depends_on 'ossp-uuid'
 
@@ -33,6 +34,9 @@ class Postgresql < Formula
 
   def install
     ENV.libxml2 if MacOS.snow_leopard?
+
+    ENV.prepend "LDFLAGS", "-L#{Formula["openssl"].opt_lib} -L#{Formula["readline"].opt_lib}"
+    ENV.prepend "CPPLAGS", "-I#{Formula["openssl"].opt_include} -I#{Formula["readline"].opt_include}"
 
     args = [
       "--disable-debug",
