@@ -36,9 +36,10 @@ class postgresql::config(
     include boxen::config
 
     boxen::env_script { 'postgresql-fish':
-      content   => template('postgresql/env.fish.erb'),
-      priority  => 'lower',
-      extension => 'fish',
+      content    => template('postgresql/env.fish.erb'),
+      priority   => 'lower',
+      scriptname => 'postgresql',
+      extension  => 'fish',
     }
 
     boxen::env_script { 'postgresql':
