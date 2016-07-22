@@ -7,12 +7,12 @@ class postgresql::params {
 
       $bindir     = "${boxen::config::homebrewdir}/bin"
       $executable = "${bindir}/postgres"
-      $datadir    = "${boxen::config::datadir}/postgresql-9.4"
-      $logdir     = "${boxen::config::logdir}/postgresql-9.4"
+      $datadir    = "${boxen::config::datadir}/postgresql-9.5"
+      $logdir     = "${boxen::config::logdir}/postgresql-9.5"
       $port       = 15432
 
       $package    = 'boxen/brews/postgresql'
-      $version    = '9.4.5_2'
+      $version    = '9.5.2'
 
       $service    = 'dev.postgresql'
 
