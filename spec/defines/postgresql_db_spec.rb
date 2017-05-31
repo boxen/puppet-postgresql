@@ -5,7 +5,7 @@ describe "postgresql::db" do
   let(:title) { 'testdb' }
 
   it do
-    should include_class("postgresql")
+    should contain_class("postgresql")
 
     should contain_exec("postgresql-db-#{title}").with({
       :command => "/test/boxen/homebrew/bin/createdb -p15432 -E UTF-8 -O testuser #{title}",
