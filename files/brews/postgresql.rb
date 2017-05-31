@@ -1,17 +1,17 @@
 class Postgresql < Formula
   desc "Object-relational database system"
   homepage "https://www.postgresql.org/"
-  url "https://ftp.postgresql.org/pub/source/v9.5.2/postgresql-9.5.2.tar.bz2"
-  sha256 "f8d132e464506b551ef498719f18cfe9d777709c7a1589dc360afc0b20e47c41"
+  url "https://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.bz2"
+  sha256 "0187b5184be1c09034e74e44761505e52357248451b0c854dddec6c231fe50c9"
+
+  head "https://github.com/postgres/postgres.git"
 
   bottle do
-    revision 1
-    sha256 "12bc2c22b06aaa82f577c14a667805a6e8aed9065a3a376e324393afdf6b62f0" => :el_capitan
-    sha256 "5e7ee10a23edb6ee985f49a969894133939a20eaeee2f2841cb8be82c2f79c74" => :yosemite
-    sha256 "e6673530167899750d5f2eaaebe53e7ff8b10caada449aef39d66a1af39cfe49" => :mavericks
+    sha256 "75795830b5d1ed481cd21e91e1c74e03a49d51e521a6cf7b167d1976cbf515dd" => :sierra
+    sha256 "df15dfcfc4672767a739012565d52990198a121cdaaa4ca986c1cd7ecddd69d9" => :el_capitan
+    sha256 "fb64a01714c6abf4509eddf6f3011d774987c6f322fde0bb35c0b476acf3eb19" => :yosemite
   end
 
-  option "32-bit"
   option "without-perl", "Build without Perl support"
   option "without-tcl", "Build without Tcl support"
   option "with-dtrace", "Build with DTrace support"
@@ -23,7 +23,12 @@ class Postgresql < Formula
   depends_on "openssl"
   depends_on "readline"
   depends_on "libxml2" if MacOS.version <= :leopard # Leopard libxml is too old
+
+  option "with-python", "Enable PL/Python2"
   depends_on :python => :optional
+
+  option "with-python3", "Enable PL/Python3 (incompatible with --with-python)"
+  depends_on :python3 => :optional
 
   conflicts_with "postgres-xc",
     :because => "postgresql and postgres-xc install the same binaries."
@@ -34,7 +39,8 @@ class Postgresql < Formula
   end
 
   def install
-    ENV.libxml2 if MacOS.version >= :snow_leopard
+    # avoid adding the SDK library directory to the linker search path
+    ENV["XML2_CONFIG"] = "xml2-config --exec-prefix=/usr"
 
     ENV.prepend "LDFLAGS", "-L#{Formula["openssl"].opt_lib} -L#{Formula["readline"].opt_lib}"
     ENV.prepend "CPPFLAGS", "-I#{Formula["openssl"].opt_include} -I#{Formula["readline"].opt_include}"
@@ -56,8 +62,16 @@ class Postgresql < Formula
       --with-libxslt
     ]
 
-    args << "--with-python" if build.with? "python"
     args << "--with-perl" if build.with? "perl"
+
+    which_python = nil
+    if build.with?("python") && build.with?("python3")
+      odie "Cannot provide both --with-python and --with-python3"
+    elsif build.with?("python") || build.with?("python3")
+      args << "--with-python"
+      which_python = which(build.with?("python") ? "python" : "python3")
+    end
+    ENV["PYTHON"] = which_python
 
     # The CLT is required to build Tcl support on 10.7 and 10.8 because
     # tclConfig.sh is not part of the SDK
@@ -72,10 +86,6 @@ class Postgresql < Formula
     args << "--enable-dtrace" if build.with? "dtrace"
     args << "--with-uuid=e2fs"
 
-    if build.build_32_bit?
-      ENV.append %w[CFLAGS LDFLAGS], "-arch #{Hardware::CPU.arch_32_bit}"
-    end
-
     system "./configure", *args
     system "make"
     system "make", "install-world", "datadir=#{pkgshare}",
@@ -84,6 +94,7 @@ class Postgresql < Formula
   end
 
   def post_install
+    (var/"log").mkpath
     (var/"postgres").mkpath
     unless File.exist? "#{var}/postgres/PG_VERSION"
       system "#{bin}/initdb", "#{var}/postgres"
@@ -96,17 +107,17 @@ class Postgresql < Formula
       https://github.com/Homebrew/homebrew/issues/2510
 
     To migrate existing data from a previous major version (pre-9.0) of PostgreSQL, see:
-      https://www.postgresql.org/docs/9.5/static/upgrading.html
+      https://www.postgresql.org/docs/9.6/static/upgrading.html
 
-    To migrate existing data from a previous minor version (9.0-9.4) of PosgresSQL, see:
-      https://www.postgresql.org/docs/9.5/static/pgupgrade.html
+    To migrate existing data from a previous minor version (9.0-9.5) of PostgreSQL, see:
+      https://www.postgresql.org/docs/9.6/static/pgupgrade.html
 
       You will need your previous PostgreSQL installation from brew to perform `pg_upgrade`.
       Do not run `brew cleanup postgresql` until you have performed the migration.
     EOS
   end
 
-  plist_options :manual => "postgres -D #{HOMEBREW_PREFIX}/var/postgres"
+  plist_options :manual => "pg_ctl -D #{HOMEBREW_PREFIX}/var/postgres start"
 
   def plist; <<-EOS.undent
     <?xml version="1.0" encoding="UTF-8"?>
@@ -122,15 +133,13 @@ class Postgresql < Formula
         <string>#{opt_bin}/postgres</string>
         <string>-D</string>
         <string>#{var}/postgres</string>
-        <string>-r</string>
-        <string>#{var}/postgres/server.log</string>
       </array>
       <key>RunAtLoad</key>
       <true/>
       <key>WorkingDirectory</key>
       <string>#{HOMEBREW_PREFIX}</string>
       <key>StandardErrorPath</key>
-      <string>#{var}/postgres/server.log</string>
+      <string>#{var}/log/postgres.log</string>
     </dict>
     </plist>
     EOS
