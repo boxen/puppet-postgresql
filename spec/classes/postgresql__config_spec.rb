@@ -6,7 +6,7 @@ describe 'postgresql::config' do
   it do
     should contain_class('boxen::config')
 
-    %w(data/postgresql-9.5 log/postgresql-9.5).each do |d|
+    %w(data/postgresql-9.6 log/postgresql-9.6).each do |d|
       should contain_file("/test/boxen/#{d}").with_ensure(:directory)
     end
 
