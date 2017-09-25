@@ -50,7 +50,7 @@ class Postgresql < Formula
       --prefix=#{prefix}
       --datadir=#{HOMEBREW_PREFIX}/share/postgresql
       --libdir=#{HOMEBREW_PREFIX}/lib
-      --sysconfdir=#{etc}
+      --sysconfdir=#{etc}/boxen/postgresql
       --docdir=#{doc}
       --enable-thread-safety
       --with-bonjour
